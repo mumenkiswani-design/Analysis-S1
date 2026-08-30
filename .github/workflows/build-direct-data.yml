@@ -1,0 +1,51 @@
+name: Build direct dashboard data
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'updated-data.js'
+      - '.github/workflows/build-direct-data.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Decode embedded dashboard data
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const zlib = require('zlib');
+          const src = fs.readFileSync('updated-data.js','utf8');
+          const m = src.match(/const b64='([^']+)'/);
+          if (!m) throw new Error('Embedded base64 data not found in updated-data.js');
+          const compressed = Buffer.from(m[1], 'base64');
+          let decoded;
+          try { decoded = zlib.brotliDecompressSync(compressed).toString('utf8'); }
+          catch (e) {
+            try { decoded = zlib.gunzipSync(compressed).toString('utf8'); }
+            catch (_) { throw e; }
+          }
+          JSON.parse(decoded);
+          fs.writeFileSync('direct-data.js', 'window.S1_DATA=' + decoded + ';\n');
+          console.log('direct-data.js bytes:', fs.statSync('direct-data.js').size);
+          NODE
+      - name: Commit direct data file
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add direct-data.js
+          if git diff --cached --quiet; then
+            echo 'No data change'
+          else
+            git commit -m 'Build direct dashboard data [skip ci]'
+            git push
+          fi
