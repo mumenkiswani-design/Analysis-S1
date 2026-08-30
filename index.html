@@ -4,6 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>S1 Medical Rep Business Review Dashboard</title>
 <link rel="stylesheet" href="styles.css">
+<style>.top-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.ppt-download{background:linear-gradient(135deg,#2563eb,#14b8a6)!important;color:#fff!important;border:0!important;box-shadow:0 10px 24px rgba(37,99,235,.22)}</style>
 </head>
 <body>
 <div class="app-shell">
@@ -21,7 +22,7 @@
   <main>
     <header class="topbar">
       <div><p class="eyebrow">FIRST-LINE SALES MANAGER</p><h1>S1 Sales Performance Dashboard</h1><p class="subtitle">2025 vs 2026 | Reconciled rep, brand, SKU and area analytics</p></div>
-      <button id="resetBtn" class="ghost">Reset filters</button>
+      <div class="top-actions"><button id="downloadPptBtn" class="ghost ppt-download">Download PowerPoint</button><button id="resetBtn" class="ghost">Reset filters</button></div>
     </header>
 
     <section class="filters panel">
@@ -76,5 +77,5 @@
     <footer>Interactive S1 business review dashboard · Source files embedded as reconciled local data · No server required</footer>
   </main>
 </div>
-<script src="bundle-part-01.js"></script><script src="bundle-part-02.js"></script><script src="bundle-part-03.js"></script><script src="bundle-loader.js"></script>
+<script src="bundle-part-01.js"></script><script src="bundle-part-02.js"></script><script src="bundle-part-03.js"></script><script src="bundle-loader.js"></script><script src="ppt-download.js"></script>
 </body></html>
