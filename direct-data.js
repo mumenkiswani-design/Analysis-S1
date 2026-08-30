@@ -1,1 +1,1 @@
-(function(){const d=document,s=d.createElement('script');s.src='data.js?v=6';s.onload=function(){const c=d.createElement('script');c.src='compat-data.js?v=6';d.head.appendChild(c)};s.onerror=function(){console.error('Failed to load full dashboard data.js')};d.head.appendChild(s)})();
+document.write('<script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"><\/script><script src="gz-1.js?v=8"><\/script><script src="gz-2.js?v=8"><\/script><script src="gz-3.js?v=8"><\/script><script src="gz-final-sync.js?v=8"><\/script>');
