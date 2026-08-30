@@ -1,0 +1,1 @@
+(function(){const E=window.S1_ENCODED||{d:{},r:[]};const D=E.d||{};window.S1_DATA={d:{month:D.month||[],rep:D.rep||[],area:D.area||[],brand:D.brand||[],sku:D.sku||[]},r:(E.r||[]).map(x=>[x[0],x[1],x[2],x[3],x[4],x[6],x[7]])};window.dispatchEvent(new Event('s1dataready'));})();
