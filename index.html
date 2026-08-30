@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>S1 Medical Rep Business Review Dashboard</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brandmark"><div class="logo">S1</div><div><strong>Business Review</strong><span>Medical Sales Analytics</span></div></div>
+    <nav>
+      <button class="nav-btn active" data-view="overview">Overview</button>
+      <button class="nav-btn" data-view="performance">Performance</button>
+      <button class="nav-btn" data-view="areas">Areas</button>
+      <button class="nav-btn" data-view="validation">Data Validation</button>
+      <button class="nav-btn" data-view="rott">ROTT Brief</button>
+    </nav>
+    <div class="source-note">Validated against official S1 2026 report<br><b>Jan - Jun 2026</b></div>
+  </aside>
+  <main>
+    <header class="topbar">
+      <div><p class="eyebrow">FIRST-LINE SALES MANAGER</p><h1>S1 Sales Performance Dashboard</h1><p class="subtitle">2025 vs 2026 | Reconciled rep, brand, SKU and area analytics</p></div>
+      <button id="resetBtn" class="ghost">Reset filters</button>
+    </header>
+
+    <section class="filters panel">
+      <label>Year<select id="yearFilter"><option value="compare">2025 vs 2026</option><option value="2026">2026</option><option value="2025">2025</option></select></label>
+      <label>Medical Rep<select id="repFilter"></select></label>
+      <label>Brand<select id="brandFilter"></select></label>
+      <label>SKU<select id="skuFilter"></select></label>
+      <label>Area<select id="areaFilter"></select></label>
+      <label>Month<select id="monthFilter"></select></label>
+    </section>
+
+    <section id="overview" class="view active-view">
+      <div id="kpiGrid" class="kpi-grid"></div>
+      <div class="chart-grid two">
+        <article class="panel chart-card"><div class="card-head"><div><h2>Medical Rep performance</h2><p>Sales comparison by rep</p></div></div><div id="repChart" class="chart"></div></article>
+        <article class="panel chart-card"><div class="card-head"><div><h2>Brand performance</h2><p>Contribution across the selected period</p></div></div><div id="brandChart" class="chart"></div></article>
+      </div>
+      <div class="chart-grid two">
+        <article class="panel chart-card"><div class="card-head"><div><h2>Monthly trend</h2><p>S1 sales run-rate</p></div></div><div id="trendChart" class="chart"></div></article>
+        <article class="panel chart-card"><div class="card-head"><div><h2>2026 achievement</h2><p>Official sales vs target</p></div></div><div id="achievementChart" class="chart"></div></article>
+      </div>
+      <article class="panel"><div class="card-head"><div><h2>Executive summary</h2><p>Dynamic insights based on current filters</p></div></div><div id="insights" class="insights"></div></article>
+    </section>
+
+    <section id="performance" class="view">
+      <div class="chart-grid two">
+        <article class="panel chart-card"><div class="card-head"><div><h2>SKU performance</h2><p>2025 vs 2026 sales</p></div></div><div id="skuChart" class="chart tall"></div></article>
+        <article class="panel chart-card"><div class="card-head"><div><h2>2026 target achievement by brand</h2><p>Official S1 target controls</p></div></div><div id="brandAchChart" class="chart tall"></div></article>
+      </div>
+      <article class="panel table-panel"><div class="card-head"><div><h2>Performance table</h2><p>Rep × brand × SKU roll-up</p></div><button id="csvBtn" class="ghost">Export CSV</button></div><div class="table-wrap"><table id="performanceTable"></table></div></article>
+    </section>
+
+    <section id="areas" class="view">
+      <div class="chart-grid two">
+        <article class="panel chart-card"><div class="card-head"><div><h2>Top areas by 2026 sales</h2><p>Reconciled area distribution</p></div></div><div id="areaChart" class="chart xl"></div></article>
+        <article class="panel chart-card"><div class="card-head"><div><h2>Area growth</h2><p>Largest absolute movement vs 2025</p></div></div><div id="areaGrowthChart" class="chart xl"></div></article>
+      </div>
+      <article class="panel table-panel"><div class="card-head"><div><h2>Area comparison</h2><p>Sales and growth by area</p></div></div><div class="table-wrap"><table id="areaTable"></table></div></article>
+    </section>
+
+    <section id="validation" class="view">
+      <div class="validation-banner"><div><span>CONTROL TOTAL</span><strong>371,043.126 JOD</strong><small>Official S1 2026 Net Sales</small></div><div><span>TARGET</span><strong>407,579.368 JOD</strong><small>Official S1 target</small></div><div><span>ACHIEVEMENT</span><strong>91.036%</strong><small>Official grand achievement</small></div></div>
+      <article class="panel"><div class="card-head"><div><h2>Official vs calculated reconciliation</h2><p>Rep × SKU validation before proportional reconciliation</p></div></div><div class="table-wrap"><table id="validationTable"></table></div></article>
+      <article class="panel methodology"><h2>Methodology & audit notes</h2><p id="methodology"></p><ul><li>2026 account allocations use the contribution percentage file when an account is present.</li><li>Accounts outside the contribution file retain the original Medical Rep attribution from All in One.</li><li>Each 2026 Rep × SKU series is proportionally adjusted to the official S1 PDF total while keeping its month and area distribution.</li><li>The validation table shows the pre-adjustment calculated figure, official figure, variance and applied factor.</li></ul></article>
+    </section>
+
+    <section id="rott" class="view">
+      <article class="panel rott-intro"><p class="eyebrow">ROTT = ROLE · OBJECTIVE · TYPE · TONE</p><h2>Business Review Brief</h2><p>Use this filtered dashboard as the evidence base for your management discussion.</p></article>
+      <div class="rott-grid" id="rottGrid"></div>
+    </section>
+
+    <footer>Interactive S1 business review dashboard · Source files embedded as reconciled local data · No server required</footer>
+  </main>
+</div>
+<script src="data-part-01.js"></script><script src="data-part-02.js"></script><script src="data-part-03.js"></script><script src="data-part-04.js"></script><script src="data-part-05.js"></script><script src="data-part-06.js"></script><script src="data-part-07.js"></script><script src="data-part-08.js"></script><script src="data-part-09.js"></script><script src="data-loader.js"></script><script src="app.js"></script>
+</body></html>
