@@ -28,14 +28,24 @@ jobs:
           const m = src.match(/const b64='([^']+)'/);
           if (!m) throw new Error('Embedded base64 data not found in updated-data.js');
           const compressed = Buffer.from(m[1], 'base64');
-          let decoded;
-          try { decoded = zlib.brotliDecompressSync(compressed).toString('utf8'); }
-          catch (e) {
-            try { decoded = zlib.gunzipSync(compressed).toString('utf8'); }
-            catch (_) { throw e; }
+          const methods = [
+            ['brotli', b => zlib.brotliDecompressSync(b)],
+            ['gzip', b => zlib.gunzipSync(b)],
+            ['zlib', b => zlib.inflateSync(b)],
+            ['raw-deflate', b => zlib.inflateRawSync(b)],
+            ['unzip', b => zlib.unzipSync(b)]
+          ];
+          let decoded = null, used = null, lastErr = null;
+          for (const [name, fn] of methods) {
+            try {
+              const text = fn(compressed).toString('utf8');
+              JSON.parse(text);
+              decoded = text; used = name; break;
+            } catch (e) { lastErr = e; }
           }
-          JSON.parse(decoded);
+          if (!decoded) throw lastErr || new Error('Unable to decode dashboard data');
           fs.writeFileSync('direct-data.js', 'window.S1_DATA=' + decoded + ';\n');
+          console.log('Decoded with:', used);
           console.log('direct-data.js bytes:', fs.statSync('direct-data.js').size);
           NODE
       - name: Commit direct data file
