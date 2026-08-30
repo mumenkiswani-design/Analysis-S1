@@ -1,0 +1,1 @@
+(function(){const d=document,s=d.createElement('script');s.src='data.js?v=6';s.onload=function(){const c=d.createElement('script');c.src='compat-data.js?v=6';d.head.appendChild(c)};s.onerror=function(){console.error('Failed to load full dashboard data.js')};d.head.appendChild(s)})();
