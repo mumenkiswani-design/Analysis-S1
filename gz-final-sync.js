@@ -1,0 +1,1 @@
+(function(){try{const b64=(window.__S1_GZ||[]).join('');delete window.__S1_GZ;const bin=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));const text=new TextDecoder().decode(fflate.gunzipSync(bin));window.S1_DATA=JSON.parse(text);}catch(e){console.error('Dashboard data load failed',e);window.S1_DATA={d:{month:[],rep:[],area:[],brand:[],sku:[]},r:[]};}})();
