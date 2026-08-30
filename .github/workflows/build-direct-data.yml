@@ -16,38 +16,48 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-python@v5
         with:
-          node-version: '20'
+          python-version: '3.12'
+      - name: Install decompression libraries
+        run: pip install brotli zstandard lz4 python-snappy
       - name: Decode embedded dashboard data
         run: |
-          node <<'NODE'
-          const fs = require('fs');
-          const zlib = require('zlib');
-          const src = fs.readFileSync('updated-data.js','utf8');
-          const m = src.match(/const b64='([^']+)'/);
-          if (!m) throw new Error('Embedded base64 data not found in updated-data.js');
-          const compressed = Buffer.from(m[1], 'base64');
-          const methods = [
-            ['brotli', b => zlib.brotliDecompressSync(b)],
-            ['gzip', b => zlib.gunzipSync(b)],
-            ['zlib', b => zlib.inflateSync(b)],
-            ['raw-deflate', b => zlib.inflateRawSync(b)],
-            ['unzip', b => zlib.unzipSync(b)]
-          ];
-          let decoded = null, used = null, lastErr = null;
-          for (const [name, fn] of methods) {
-            try {
-              const text = fn(compressed).toString('utf8');
-              JSON.parse(text);
-              decoded = text; used = name; break;
-            } catch (e) { lastErr = e; }
-          }
-          if (!decoded) throw lastErr || new Error('Unable to decode dashboard data');
-          fs.writeFileSync('direct-data.js', 'window.S1_DATA=' + decoded + ';\n');
-          console.log('Decoded with:', used);
-          console.log('direct-data.js bytes:', fs.statSync('direct-data.js').size);
-          NODE
+          python <<'PY'
+          import re, base64, json, zlib, gzip, bz2, lzma
+          from pathlib import Path
+          import brotli, zstandard as zstd, lz4.frame, snappy
+          src=Path('updated-data.js').read_text(encoding='utf-8')
+          m=re.search(r"const b64='([^']+)'",src)
+          if not m: raise RuntimeError('Embedded base64 data not found')
+          b=base64.b64decode(m.group(1))
+          print('compressed bytes',len(b),'head',b[:16].hex())
+          methods=[
+            ('gzip',lambda x:gzip.decompress(x)),
+            ('zlib',lambda x:zlib.decompress(x)),
+            ('raw-deflate',lambda x:zlib.decompress(x,-15)),
+            ('bz2',lambda x:bz2.decompress(x)),
+            ('lzma-auto',lambda x:lzma.decompress(x)),
+            ('brotli',lambda x:brotli.decompress(x)),
+            ('zstd',lambda x:zstd.ZstdDecompressor().decompress(x)),
+            ('lz4-frame',lambda x:lz4.frame.decompress(x)),
+            ('snappy',lambda x:snappy.decompress(x)),
+          ]
+          decoded=None
+          for name,fn in methods:
+            try:
+              out=fn(b)
+              text=out.decode('utf-8')
+              json.loads(text)
+              decoded=text
+              print('SUCCESS',name,'decoded bytes',len(out))
+              break
+            except Exception as e:
+              print('FAIL',name,type(e).__name__,str(e)[:120])
+          if decoded is None:
+            raise RuntimeError('No supported decoder could decode updated-data.js')
+          Path('direct-data.js').write_text('window.S1_DATA='+decoded+';\n',encoding='utf-8')
+          PY
       - name: Commit direct data file
         run: |
           git config user.name 'github-actions[bot]'
